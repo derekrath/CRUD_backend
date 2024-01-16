@@ -4,14 +4,35 @@ console.log('connectionString:', connectionString, 'env environment', process.en
 
 module.exports = {
     development: {
-
+        client: 'pg',
+        connection: { connectionString }, //might need to remove reject unauthorized ssl if connection doesnt work
+        migrations: {
+            directory: './migrations',
+        },
+        seeds: {
+            directory: './seeds'
+        }
     },
 
     staging: {
-
+        client: 'pg',
+        connection: { connectionString }, //might need to remove reject unauthorized ssl if connection doesnt work
+        migrations: {
+            directory: './migrations',
+        },
+        seeds: {
+            directory: './seeds'
+        }
     },
 
     production: {
-
+        client: 'pg',
+        connection: { connectionString }, //might need to remove reject unauthorized ssl if connection doesnt work
+        migrations: {
+            directory: './migrations',
+        },
+        seeds: {
+            directory: './seeds'
+        }
     }
 }
