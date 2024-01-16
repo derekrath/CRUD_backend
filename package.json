@@ -1,0 +1,19 @@
+{
+  "name": "crud_backend",
+  "version": "1.0.0",
+  "description": "CRUD assessment backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derekrath/CRUD_backend.git"
+  },
+  "author": "Derek Rath",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derekrath/CRUD_backend/issues"
+  },
+  "homepage": "https://github.com/derekrath/CRUD_backend#readme"
+}
