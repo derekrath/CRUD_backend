@@ -1,9 +1,14 @@
 {
-  "name": "crud_backend",
+  "name": "server",
   "version": "1.0.0",
   "description": "CRUD assessment backend",
-  "main": "index.js",
+  "engines": {"node":"latest"},
+  "main": "server.js",
   "scripts": {
+    "start:dev": "nodemon server.js",
+    "start:server": "node server.js",
+    "start:knex": "npx knex migrate:rollback && npx knex migrate:latest && npz knex seed:run",
+    "start": "npm run start:knex && npm run start:server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
