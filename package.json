@@ -25,9 +25,13 @@
   "homepage": "https://github.com/derekrath/CRUD_backend#readme",
   "dependencies": {
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "knex": "^3.1.0",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
   }
 }
