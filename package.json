@@ -2,7 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "description": "CRUD assessment backend",
-  "engines": {"node":"latest"},
+  "engines": {
+    "node": "latest"
+  },
   "main": "server.js",
   "scripts": {
     "start:dev": "nodemon server.js",
@@ -20,5 +22,12 @@
   "bugs": {
     "url": "https://github.com/derekrath/CRUD_backend/issues"
   },
-  "homepage": "https://github.com/derekrath/CRUD_backend#readme"
+  "homepage": "https://github.com/derekrath/CRUD_backend#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "knex": "^3.1.0",
+    "lodash": "^4.17.21",
+    "morgan": "^1.10.0",
+    "pg": "^8.11.3"
+  }
 }
