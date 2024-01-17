@@ -9,7 +9,7 @@
   "scripts": {
     "start:dev": "nodemon server.js",
     "start:server": "node server.js",
-    "start:knex": "npx knex migrate:rollback && npx knex migrate:latest && npz knex seed:run",
+    "start:knex": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run",
     "start": "npm run start:knex && npm run start:server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/derekrath/CRUD_backend#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

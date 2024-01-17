@@ -8,3 +8,7 @@ app.use(morgan('tiny'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const knex = require('./db_controllers/dbConnection')
+
+module.exports = app;
