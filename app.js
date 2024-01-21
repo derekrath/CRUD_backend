@@ -38,8 +38,10 @@ app.post("/users", async (req, res) => {
     } else {
       res.status(409).send({ message: `USERNAME ${username} ALREADY EXISTS` });
     }
-  } catch (err) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -52,7 +54,9 @@ app.get("/users", async (req, res) => {
     }
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -93,8 +97,10 @@ app.post("/login", (req, res) => {
           });
       }
     })
-    .catch((err) => {
-      res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ message: "INTERNAL SERVER ERROR", error: error.message });
     });
 });
 
@@ -123,15 +129,18 @@ app.get("/users/:id", async (req, res) => {
     const { hashedPassword, ...sanitizedUserInfo } = userInfo;
     res.status(200).json(sanitizedUserInfo);
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
 //update user profile
 app.put("/users/:id", async (req, res) => {
+  const newUserInfo = req.body;
   try {
     const id = parseInt(req.params.id);
-    const { first_name, last_name } = req.body;
+    // const { first_name, last_name } = req.body;
 
     //Validate user ID
     if (isNaN(id) || id <= 0) {
@@ -139,20 +148,23 @@ app.put("/users/:id", async (req, res) => {
     }
 
     //Check user authorization
-    if (req.user.id !== id) {
+    if (newUserInfo.id !== id) {
       return res.status(403).json({ message: "UNAUTHORIZED" });
     }
 
     const updatedUserInfo = await knex("users")
       .where("id", id)
-      .update({ first_name, last_name })
+      // .update({ first_name, last_name })
+      .update(newUserInfo)
       .returning("*");
 
     const { hashedPassword, ...sanitizedUserInfo } = updatedUserInfo[0];
 
     res.status(200).json(sanitizedUserInfo);
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -164,7 +176,9 @@ app.delete("/users/:id", async (req, res) => {
     await knex("users").where({ id }).del();
     res.status(200).json({ message: "USER ACCOUNT DELETED" });
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -177,11 +191,13 @@ app.get("/items", async (req, res) => {
   try {
     const result = await knex("items").select("*");
     if (result.length === 0) {
-      return res.status(404).json({ message: "No items found" });
+      return res.status(404).json({ message: "NO ITEMS FOUND" });
     }
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -205,15 +221,16 @@ app.get("/items/:user_id", async (req, res) => {
     }
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
 //add a new item to inventory
 app.post("/items", async (req, res) => {
   try {
-    const { name, description, quantity } = req.body;
-    const user_id = req.user.id;
+    const { user_id, name, description, quantity } = req.body;
 
     //validate user
     const validUser = await knex("users").where("id", user_id).first();
@@ -223,19 +240,23 @@ app.post("/items", async (req, res) => {
 
     // validate input data
     if (typeof name !== "string" || !name.trim()) {
-      return res.status(400).json({ message: "INVALID ENTRY" });
+      return res.status(400).json({ message: "INVALID NAME" });
     }
-    if (typeof quantity !== "number" || quantity == null || quantity < 0) {
-      return res.status(400).json({ message: "INVALID ENTRY" });
+    if (typeof description !== "string" || !description.trim()) {
+      return res.status(400).json({ message: "INVALID DESCRIPTION" });
+    }
+    if (isNaN(quantity) || quantity == null || quantity < 0) {
+      return res.status(400).json({ message: "INVALID QUANTITY" });
     }
 
     const newItem = await knex("items")
       .insert({ user_id, name, description, quantity })
       .returning("*");
-
     res.status(201).json(newItem);
-  } catch (err) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -256,7 +277,9 @@ app.get("/items/:id", async (req, res) => {
 
     res.status(200).json(item);
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -265,32 +288,31 @@ app.put("/items/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const { name, description, quantity } = req.body;
+    quantityNum = parseInt(quantity, 10);
 
     // Validate item ID
     if (isNaN(id) || id <= 0) {
-      return res.status(400).json({ message: "INVALID USER ID" });
+      return res.status(400).json({ message: "INVALID ITEM ID" });
     }
 
     // Input validation
     if (typeof name !== "string" || !name.trim()) {
       return res.status(400).json({ message: "INVALID NAME" });
     }
-    if (typeof quantity !== "number" || quantity < 0) {
+    if (typeof description !== "string" || !description.trim()) {
+      return res.status(400).json({ message: "INVALID DESCRIPTION" });
+    }
+    if (isNaN(quantity) || quantity == null || quantity < 0) {
       return res.status(400).json({ message: "INVALID QUANTITY" });
     }
 
-    //Check item exists
-    const item = await knex("items").where("id", id).first();
-    if (!item) {
-      return res.status(404).json({ message: "ITEM NOT FOUND" });
-    }
-
-    //Validate user
-    if (req.user.id !== item.user_id) {
+    //Validate ID
+    if (req.body.id !== id) {
       return res.status(403).json({ message: "UNAUTHORIZED" });
     }
 
-    const curentItem = await knex("items").where("id", id).first();
+    //Validate item exists
+    const currentItem = await knex("items").where("id", id).first();
     if (!currentItem) {
       return res.status(404).json({ message: "ITEM NOT FOUND" });
     }
@@ -303,7 +325,9 @@ app.put("/items/:id", async (req, res) => {
 
     res.status(200).json(updatedItem);
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
@@ -323,17 +347,14 @@ app.delete("/items/:id", async (req, res) => {
       return res.status(404).json({ message: "ITEM NOT FOUND" });
     }
 
-    //Validate user
-    if (req.user.id !== item.user_id) {
-      return res.status(403).json({ message: "UNAUTHORIZED" });
-    }
-
     // Delete the item
     await knex("items").where("id", id).del();
 
-    res.status(200).json({ message: "Item removed" });
+    res.status(200).json({ message: "ITEM REMOVED" });
   } catch (error) {
-    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
   }
 });
 
