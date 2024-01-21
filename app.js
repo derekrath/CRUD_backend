@@ -260,6 +260,20 @@ app.post("/items", async (req, res) => {
   }
 });
 
+//must define this specific endpoint before defining more generic ones!
+//Update multiple items at once
+app.put("/items/bulkupdate", async (req, res) => {
+  try {
+    const items = req.body.items;
+    for (let item of items) {
+      await knex("items").where("id", item.id).update(item);
+    }
+    res.status(200).json({ message: "ITEMS UPDATED" });
+  } catch (error) {
+    res.status(500).json({ message: "INTERNAL SERVER ERROR", error });
+  }
+});
+
 //get specific item in inventory
 app.get("/items/:id", async (req, res) => {
   try {
