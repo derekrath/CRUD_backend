@@ -1,0 +1,63 @@
+# The application will be accessible at http://localhost:3000
+
+# (For dev or assessment only, docker-compose settings for building services) -
+# To run the application, place the server and ui directories inside a folder with a docker-compose.yaml file containing the following information:
+
+version: '3'
+
+services:
+  db:
+    image: 'postgres:latest'
+    # image: 'postgres:14.1'
+    restart: always
+    container_name: db
+    ports:
+      - '5432:5432'
+    env_file:
+     - ./server/.env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: postgres
+      # hide these in the .env file in the server directory?
+    networks:
+      - appnetwork
+  
+  server:
+    # image: server
+    build: ./server
+    container_name: server
+    volumes:
+      - ./server:/server
+      # - /usr/src/app/node_modules
+    ports:
+      - '8080:8080'
+    env_file:
+     - ./server/.env
+    # environment:
+      # DATABASE_URL: postgres://postgres:docker@db:5432/postgres
+    # also a common variable:
+      # DB_CONNECTION_STRING: postgres://postgres:docker@db:5432/postgres
+    networks:
+      - appnetwork
+    depends_on:
+      - db
+
+  ui:
+    build: ./ui
+    # image: ui
+    container_name: ui
+    # environment:
+    #   - FAST_REFRESH=false
+    volumes:
+      - ./ui:/src/app
+    ports: 
+      - '3000:3000'
+    env_file:
+      - ./ui/.env
+    depends_on:
+      - server
+  
+networks:
+  appnetwork:
+    driver: bridge
