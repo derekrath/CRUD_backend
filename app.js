@@ -14,7 +14,6 @@ const knex = require("./db_controllers/dbConnection");
 
 const {
   createUser,
-  // getHashedPassword,
   getUserByUsername,
 } = require("./db_controllers/controllers");
 const saltRounds = 12;
@@ -30,9 +29,7 @@ app.post("/users", async (req, res) => {
   try {
     let { username, password } = req.body;
     const hashedPassword = await hash(password, saltRounds);
-    // const hashedPassword = hash(rawPassword, saltRounds);
     const data = await createUser(username, hashedPassword);
-    // const data = createUser(username, hashedPassword);
     if (data.length > 0) {
       res.status(201).send({ message: "ACCOUNT CREATED" });
     } else {
@@ -140,7 +137,6 @@ app.put("/users/:id", async (req, res) => {
   const newUserInfo = req.body;
   try {
     const id = parseInt(req.params.id);
-    // const { first_name, last_name } = req.body;
 
     //Validate user ID
     if (isNaN(id) || id <= 0) {
@@ -154,7 +150,6 @@ app.put("/users/:id", async (req, res) => {
 
     const updatedUserInfo = await knex("users")
       .where("id", id)
-      // .update({ first_name, last_name })
       .update(newUserInfo)
       .returning("*");
 
@@ -275,7 +270,7 @@ app.put("/items/bulkupdate", async (req, res) => {
 });
 
 //get specific item in inventory
-app.get("/items/:id", async (req, res) => {
+app.get("/items/id/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -290,6 +285,31 @@ app.get("/items/:id", async (req, res) => {
     }
 
     res.status(200).json(item);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "INTERNAL SERVER ERROR", error: error.message });
+  }
+});
+
+// Search for an item by name
+app.get("/items/name/:name", async (req, res) => {
+  try {
+    const name = req.params.name;
+
+    // Validate item name
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "INVALID ITEM NAME" });
+    }
+
+    let items = await knex("items").where("name", name);
+    if (items.length > 0) {
+      return res.status(200).json(items);
+    }
+
+    // If no exact match, search for "like" names
+    items = await knex("items").where("name", "like", `%${name}%`);
+    res.status(200).json(items);
   } catch (error) {
     res
       .status(500)
