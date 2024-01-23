@@ -10,7 +10,7 @@ console.log(
 module.exports = {
   development: {
     client: "pg",
-    connection: connectionString, //might need to remove reject unauthorized ssl if connection doesnt work
+    connection: { connectionString, ssl: { rejectUnauthorized: false, }, },
     migrations: {
       directory: "./migrations",
     },
@@ -21,7 +21,7 @@ module.exports = {
 
   staging: {
     client: "pg",
-    connection: connectionString, //might need to remove reject unauthorized ssl if connection doesnt work
+    connection: { connectionString, ssl: { rejectUnauthorized: false, }, },
     migrations: {
       directory: "./migrations",
     },
