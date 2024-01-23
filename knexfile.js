@@ -1,5 +1,5 @@
 require("dotenv").config();
-// const connectionString = process.env.DATABASE_URL; //hosting service should use DATABASE_URL environment variable. Double check before production.
+const connectionString = process.env.DATABASE_URL; //hosting service should use DATABASE_URL environment variable. Double check before production.
 console.log(
   "connectionString:",
   connectionString,
@@ -32,11 +32,7 @@ module.exports = {
 
   production: {
     client: "pg",
-    connection: {
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-    },
-    // connection: connectionString, //might need to remove reject unauthorized ssl if connection doesnt work
+    connection: { connectionString, ssl: { rejectUnauthorized: false, }, },
     migrations: {
       directory: "./migrations",
     },
