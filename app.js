@@ -19,6 +19,10 @@ const {
 const saltRounds = 12;
 const { hash, compare } = bcrypt;
 
+app.get('/', (req, res) => {
+  res.send('Backend is running');
+});
+
 ///////////////////
 // User Manageemnt
 ///////////////////
