@@ -17,6 +17,16 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
+// exports.down = function(knex) {
+//   return knex.schema.dropTable('users');
+// };
 exports.down = function(knex) {
-  return knex.schema.dropTable('users');
+  return knex.schema
+    .table('items', function(table) {
+      table.dropForeign('user_id');
+    })
+    .then(function() {
+      return knex.schema.dropTableIfExists('users');
+    });
 };
+
